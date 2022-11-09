@@ -1,5 +1,5 @@
 import { handlerFor } from '@node-ts/bus-core';
-import { session } from '../neo4j';
+import { session } from '../../neo4j';
 import { CreateUserCommand } from './create-user-command';
 
 export const createUserHandler = handlerFor(CreateUserCommand, createUser);

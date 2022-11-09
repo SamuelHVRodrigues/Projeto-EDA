@@ -1,5 +1,5 @@
 import { Command } from '@node-ts/bus-messages';
-import { UserCreationParams } from '../users/user';
+import { UserCreationParams } from '../../users/user';
 
 export class CreateUserCommand extends Command {
   $name = 'createUser';

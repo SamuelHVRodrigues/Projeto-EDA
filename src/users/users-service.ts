@@ -1,5 +1,5 @@
-import { CreateUserCommand } from '../event-bus/create-user-command';
-import { bus } from '../event-bus/event-bus';
+import { CreateUserCommand } from '../event-bus/create-user/create-user-command';
+import { bus } from '../event-bus';
 import { UserCreationParams } from './user';
 
 export class UsersService {
