@@ -5,7 +5,7 @@ import { UsersService } from './users-service';
 @Route('users')
 export class UsersController extends Controller {
   @Post()
-  public async createUser(@Body() requestBody: UserCreationParams): Promise<void> {
+  public async sendCreateUserCommand(@Body() requestBody: UserCreationParams): Promise<void> {
     await new UsersService().create(requestBody);
   }
 }
