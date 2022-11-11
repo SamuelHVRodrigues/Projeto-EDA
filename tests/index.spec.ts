@@ -7,6 +7,8 @@ import chai, { expect } from 'chai';
 import chaiExclude from 'chai-exclude';
 import { CreateFriendshipCommand } from '../src/event-bus/create-friendship/create-friendship-command';
 import { createFriendship } from '../src/event-bus/create-friendship/create-friendship-handler';
+import { UndoFriendshipCommand } from '../src/event-bus/undo-friendship/undo-friendship-command';
+import { undoFriendship } from '../src/event-bus/undo-friendship/undo-friendship-handler';
 
 chai.use(chaiExclude);
 
@@ -34,7 +36,7 @@ describe('Test createUserHandler', () => {
   });
 });
 
-describe('Test createFriendshipHandler', () => {
+describe('Test friendship handlers', () => {
   beforeEach(async () => {
     await session.run(`CREATE
       (:USER {id: "1", name: "Cosmo", email: "cosmo@email.com", password: "password"}),
@@ -51,7 +53,9 @@ describe('Test createFriendshipHandler', () => {
 
     await createFriendship(command);
 
-    const result = await session.run(`MATCH (start:USER) -[rel:FRIENDS_TO]-> (end:USER) RETURN start, end, rel`);
+    const result = await session.run(`MATCH (start:USER) -[rel:FRIENDS_TO]-> (end:USER)
+      WHERE start.id = "1" AND end.id = "2"
+      RETURN start, end, rel`);
     const records = result.records;
     const startNode = records[0].get(0);
     const endNode = records[0].get(1);
@@ -61,5 +65,23 @@ describe('Test createFriendshipHandler', () => {
     expect(relationship.type).to.be.deep.eq('FRIENDS_TO');
     expect(relationship.startNodeElementId).to.be.deep.eq(startNode.elementId);
     expect(relationship.endNodeElementId).to.be.deep.eq(endNode.elementId);
+  });
+
+  it('should undo the relation between two users', async () => {
+    await session.run(`MATCH (user:USER), (friend:USER)
+      WHERE user.id = "1" AND friend.id = "2"
+      CREATE (user) -[:FRIENDS_TO]-> (friend)`);
+
+    const undoFriendshipParams = { userId1: '1', userId2: '2' };
+    const command = new UndoFriendshipCommand(undoFriendshipParams);
+
+    await undoFriendship(command);
+
+    const result = await session.run(`MATCH (start:USER) -[rel:FRIENDS_TO]-> (end:USER)
+      WHERE start.id = "1" AND end.id = "2"
+      RETURN start, end, rel`);
+    const records = result.records;
+
+    expect(records.length).to.be.deep.eq(0);
   });
 });
