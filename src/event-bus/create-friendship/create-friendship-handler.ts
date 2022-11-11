@@ -8,7 +8,7 @@ export async function createFriendship(command) {
   await session.run(
     `MATCH (user:USER), (friend:USER)
       WHERE user.id = $userId1 AND friend.id = $userId2
-      CREATE (user) -[:FRIENDS_TO]-> (friend), (friend) -[:FRIENDS_TO]-> (user)`,
+      CREATE (user) -[:FRIENDS_TO]-> (friend)`,
     {
       userId1: command.friendshipCreationParams.userId1,
       userId2: command.friendshipCreationParams.userId2,
