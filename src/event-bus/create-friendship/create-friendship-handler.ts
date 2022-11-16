@@ -7,11 +7,8 @@ export const createFriendshipHandler = handlerFor(CreateFriendshipCommand, creat
 export async function createFriendship(command) {
   await session.run(
     `MATCH (user:USER), (friend:USER)
-      WHERE user.id = $userId1 AND friend.id = $userId2
+      WHERE user.id = $input.userId1 AND friend.id = $input.userId2
       CREATE (user) -[:FRIENDS_TO]-> (friend)`,
-    {
-      userId1: command.friendshipCreationParams.userId1,
-      userId2: command.friendshipCreationParams.userId2,
-    },
+    { input: command.friendshipCreationParams },
   );
 }
