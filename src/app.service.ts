@@ -1,5 +1,5 @@
-import { bus } from './event-bus/event-bus';
-import { HelloCommand } from './event-bus/hello-command';
+import { bus } from './event-bus';
+import { HelloCommand } from './event-bus/hello/hello-command';
 
 export class Hello {
   public get(): string {
